@@ -16,5 +16,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Print(answer)
+	fmt.Println(answer)
+
+	// you can also use Confirm to always return a boolean which defaults to false
+	confirm, err := p.Confirm("Do you confirm these changes", &prompt.InputOptions{Default: "yes"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(confirm)
 }

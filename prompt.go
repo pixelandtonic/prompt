@@ -46,7 +46,7 @@ type InputOptions struct {
 
 // Ask is used to gather input from a user in the form of a question.
 // by default, it will add a ? to the provided question.
-func (p *Prompt) Ask(question string, opts *InputOptions) (string, error) {
+func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 	format := "%s"
 	if p.AppendQuestionMarksOnAsk == true {
 		format = format + "?"
@@ -58,7 +58,7 @@ func (p *Prompt) Ask(question string, opts *InputOptions) (string, error) {
 		format = format + " "
 	}
 
-	fmt.Fprintf(p.Writer, format, question)
+	fmt.Fprintf(p.Writer, format, text)
 
 	rdr := bufio.NewReader(p.Reader)
 	resp, err := rdr.ReadString('\n')
@@ -70,11 +70,50 @@ func (p *Prompt) Ask(question string, opts *InputOptions) (string, error) {
 
 	if input == "" && opts.Default == "" {
 		return "", errors.New("no value provided")
-	} else if input == "" && opts.Default != "" {
+	}
+
+	if input == "" && opts.Default != "" {
 		return opts.Default, nil
 	}
 
 	return resp, nil
+}
+
+func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
+	format := "%s"
+	if p.AppendQuestionMarksOnAsk == true {
+		format = format + "?"
+	}
+	if p.ShowDefaultInPrompt && opts.Default != "" {
+		format = format + " [" + opts.Default + "]"
+	}
+	if p.AppendSpace == true {
+		format = format + " "
+	}
+
+	fmt.Fprintf(p.Writer, format, text)
+
+	rdr := bufio.NewReader(p.Reader)
+	resp, err := rdr.ReadString('\n')
+	if err != nil {
+		return false, err
+	}
+
+	input := strings.TrimSpace(resp)
+
+	if input == "" && opts.Default == "" {
+		return false, errors.New("no value provided")
+	}
+
+	if input == "" && opts.Default != "" {
+		input = opts.Default
+	}
+
+	if strings.ContainsAny(input, "y") {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 // NewPrompt is used to quickly create a new prompt
