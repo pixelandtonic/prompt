@@ -48,11 +48,11 @@ type InputOptions struct {
 // by default, it will add a ? to the provided question.
 func (p *Prompt) Ask(question string, opts *InputOptions) (string, error) {
 	format := "%s"
-	if p.ShowDefaultInPrompt && opts.Default != "" {
-		format = format + " [" + opts.Default + "]"
-	}
 	if p.AppendQuestionMarksOnAsk == true {
 		format = format + "?"
+	}
+	if p.ShowDefaultInPrompt && opts.Default != "" {
+		format = format + " [" + opts.Default + "]"
 	}
 	if p.AppendSpace == true {
 		format = format + " "
