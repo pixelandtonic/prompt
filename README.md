@@ -23,7 +23,8 @@ p := prompt.NewWithOptions(opts)
 To prompt a user to enter input, you simply `.Ask`:
 
 ```go
-answer, err := p.Ask("What is the answer to the Ultimate Question of Life, the Universe, and Everything", &prompt.InputOptions{Default: "42"})
+opts := &prompt.InputOptions{Default: "42"}
+answer, err := p.Ask("What is the answer to the Ultimate Question of Life, the Universe, and Everything", opts)
 if err != nil {
 	log.Println(err)
 }
@@ -38,7 +39,8 @@ If the user does not provide an input, the default value passed in the options w
 You can also validate input with a simple func:
 
 ```go
-answer, err := p.Ask("What is the answer to the Ultimate Question of Life, the Universe, and Everything", &prompt.InputOptions{Default: "42", Validator: validateTheMeaning})
+opts := &prompt.InputOptions{Default: "42", Validator: validateTheMeaning}
+answer, err := p.Ask("What is the answer to the Ultimate Question of Life, the Universe, and Everything", opts)
 if err != nil {
 	log.Println(err)
 }
@@ -61,7 +63,8 @@ func validateTheMeaning(input string) error {
 You can also use Confirm to always return a boolean which defaults to false
 
 ```go
-confirm, err := p.Confirm("Do you confirm these changes", &prompt.InputOptions{Default: "yes"})
+opts := &prompt.InputOptions{Default: "yes"}
+confirm, err := p.Confirm("Do you confirm these changes", opts)
 if err != nil {
 	log.Println(err)
 }
@@ -75,7 +78,8 @@ You can also pass a validator to confirm, but this will default to checking if t
 You can also create a selection of items to choose from:
 
 ```go
-selected, index, err := p.Select("Select an speed", []string{"Ludicrous mode", "Normal mode"}, &prompt.InputOptions{Default: "1"})
+opts := &prompt.InputOptions{Default: "1"}
+selected, index, err := p.Select("Select an speed", []string{"Ludicrous mode", "Normal mode"}, opts)
 if err != nil {
 	log.Println(err)
 }
