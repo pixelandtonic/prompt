@@ -121,9 +121,9 @@ func (p *Prompt) Select(text string, list []string, opts *InputOptions) (string,
 	var selectedIndex int
 	var selectedText string
 	for i, l := range list {
-		f := "%d - %s\n"
+		f := "  %d - %s\n"
 		if i == len(list)-1 {
-			f = "%d - %s\n"
+			f = "  %d - %s\n"
 		}
 
 		_, err := p.Writer.Write([]byte(fmt.Sprintf(f, i+1, l)))
