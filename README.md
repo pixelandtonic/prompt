@@ -28,11 +28,11 @@ To prompt a user to enter input, you simply `.Ask`:
 
 ```go
 opts := &prompt.InputOptions{Default: "42"}
-answer, err := p.Ask("What is the answer to the Ultimate Question of Life, the Universe, and Everything", opts)
+a, err := p.Ask("What is the answer to the Ultimate Question of Life, the Universe, and Everything", opts)
 if err != nil {
 	log.Println(err)
 }
-fmt.Println("the user answered:", answer)
+fmt.Println("the user answered:", a)
 ```
 
 > Note: Notice how we did not add a space or ? at the end of the question. The default options when calling `.NewPrompt()` will always add a space and question mark at the end of the output question. If you want to override that pass options using [`prompt.Options`](#passing-options)
@@ -44,11 +44,11 @@ You can also validate input with a simple func:
 
 ```go
 opts := &prompt.InputOptions{Default: "42", Validator: validateTheMeaning}
-answer, err := p.Ask("What is the answer to the Ultimate Question of Life, the Universe, and Everything", opts)
+a, err := p.Ask("What is the answer to the Ultimate Question of Life, the Universe, and Everything", opts)
 if err != nil {
 	log.Println(err)
 }
-fmt.Println("answered:", answer)
+fmt.Println("the user answered:", a)
 ```
 
 The validate function is simple and takes a string and returns an error:
