@@ -4,6 +4,10 @@ A simple Go package to make terminal input styled a little more like console inp
 
 ## Installation
 
+```shell script
+go get github.com/pixelandtonic/prompt
+```
+
 ## Example Usage
 
 To create a new default prompt:
