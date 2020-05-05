@@ -129,7 +129,48 @@ func TestPrompt_Confirm(t *testing.T) {
 		want    bool
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "returns true when user enters yes",
+			fields: fields{
+				Reader:  bytes.NewBuffer([]byte("yes\n")),
+				Writer:  ioutil.Discard,
+				Options: nil,
+			},
+			args: args{
+				text: "Do you agree?",
+				opts: nil,
+			},
+			want:    true,
+			wantErr: false,
+		},
+		{
+			name: "catches any part of the word yes as true",
+			fields: fields{
+				Reader:  bytes.NewBuffer([]byte("es\n")),
+				Writer:  ioutil.Discard,
+				Options: nil,
+			},
+			args: args{
+				text: "Do you agree?",
+				opts: nil,
+			},
+			want:    true,
+			wantErr: false,
+		},
+		{
+			name: "returns the default",
+			fields: fields{
+				Reader:  bytes.NewBuffer([]byte("\n")),
+				Writer:  ioutil.Discard,
+				Options: nil,
+			},
+			args: args{
+				text: "Do you agree?",
+				opts: &InputOptions{Default: "no"},
+			},
+			want:    false,
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -204,6 +245,44 @@ func TestNewPromptWithOptions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewPromptWithOptions(tt.args.opts); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewPromptWithOptions() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPrompt_Confirm1(t *testing.T) {
+	type fields struct {
+		Reader  io.Reader
+		Writer  io.Writer
+		Options *Options
+	}
+	type args struct {
+		text string
+		opts *InputOptions
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    bool
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &Prompt{
+				Reader:  tt.fields.Reader,
+				Writer:  tt.fields.Writer,
+				Options: tt.fields.Options,
+			}
+			got, err := p.Confirm(tt.args.text, tt.args.opts)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Confirm() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Confirm() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

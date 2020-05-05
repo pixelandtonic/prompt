@@ -61,13 +61,13 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 
 func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
 	format := "%s"
-	if p.AppendQuestionMarksOnAsk == true {
+	if p.Options != nil && p.AppendQuestionMarksOnAsk == true {
 		format = format + "?"
 	}
-	if p.ShowDefaultInPrompt && opts.Default != "" {
+	if p.Options != nil && p.ShowDefaultInPrompt && opts.Default != "" {
 		format = format + " [" + opts.Default + "]"
 	}
-	if p.AppendSpace == true {
+	if p.Options != nil && p.AppendSpace == true {
 		format = format + " "
 	}
 
@@ -89,13 +89,13 @@ func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
 		input = opts.Default
 	}
 
-	if opts.Validator != nil {
+	if opts != nil && opts.Validator != nil {
 		if err := opts.Validator(input); err != nil {
 			return false, err
 		}
 	}
 
-	if strings.ContainsAny(input, "y") {
+	if strings.ContainsAny(input, "yes") {
 		return true, nil
 	}
 
