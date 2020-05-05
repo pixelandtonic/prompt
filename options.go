@@ -16,6 +16,6 @@ type Options struct {
 	AppendSpace bool
 	// ShowDefaultInPrompt is used to embed
 	// the "default" for an input in quotes
-	// (e.g. (default is 42)
+	// e.g. [42]
 	ShowDefaultInPrompt bool
 }
