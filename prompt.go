@@ -21,21 +21,9 @@ type Prompt struct {
 // Ask is used to gather input from a user in the form of a question.
 // by default, it will add a ? to the provided question.
 func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
-	format := "%s"
-	if p.Options != nil && p.AppendQuestionMarksOnAsk == true {
-		format = format + "?"
-	}
-	if p.Options != nil && p.ShowDefaultInPrompt && opts.Default != "" {
-		format = format + " [" + opts.Default + "]"
-	}
-	if p.Options != nil && p.AppendSpace == true {
-		format = format + " "
-	}
+	format := p.format(opts)
 
-	fmt.Fprintf(p.Writer, format, text)
-
-	rdr := bufio.NewReader(p.Reader)
-	resp, err := rdr.ReadString('\n')
+	resp, err := p.read(text, format)
 	if err != nil {
 		return "", err
 	}
@@ -60,42 +48,28 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 }
 
 func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
-	format := "%s"
-	if p.Options != nil && p.AppendQuestionMarksOnAsk == true {
-		format = format + "?"
-	}
-	if p.Options != nil && p.ShowDefaultInPrompt && opts.Default != "" {
-		format = format + " [" + opts.Default + "]"
-	}
-	if p.Options != nil && p.AppendSpace == true {
-		format = format + " "
-	}
+	format := p.format(opts)
 
-	fmt.Fprintf(p.Writer, format, text)
-
-	rdr := bufio.NewReader(p.Reader)
-	resp, err := rdr.ReadString('\n')
+	resp, err := p.read(text, format)
 	if err != nil {
 		return false, err
 	}
 
-	input := strings.TrimSpace(resp)
-
-	if input == "" && opts.Default == "" {
+	if resp == "" && opts.Default == "" {
 		return false, errors.New("no value provided")
 	}
 
-	if input == "" && opts.Default != "" {
-		input = opts.Default
+	if resp == "" && opts.Default != "" {
+		resp = opts.Default
 	}
 
 	if opts != nil && opts.Validator != nil {
-		if err := opts.Validator(input); err != nil {
+		if err := opts.Validator(resp); err != nil {
 			return false, err
 		}
 	}
 
-	if strings.ContainsAny(input, "yes") {
+	if strings.ContainsAny(resp, "yes") {
 		return true, nil
 	}
 
@@ -110,19 +84,13 @@ func (p *Prompt) Select(text string, list []string, opts *InputOptions) (string,
 		return "", 0, errors.New("list must be greater than 0")
 	}
 
-	format := "%s"
-	if p.AppendQuestionMarksOnAsk == true {
-		format = format + "?"
-	}
-	if p.ShowDefaultInPrompt && opts.Default != "" {
-		format = format + " [" + opts.Default + "]"
-	}
-	if p.AppendSpace == true {
-		format = format + " "
-	}
+	format := p.format(opts)
 
 	var selectedIndex int
 	var selectedText string
+
+	// print the list before the prompt to
+	// provide clear options
 	for i, l := range list {
 		f := "  %d - %s\n"
 		if i == len(list)-1 {
@@ -135,27 +103,53 @@ func (p *Prompt) Select(text string, list []string, opts *InputOptions) (string,
 		}
 	}
 
+	resp, err := p.read(text, format)
+	if err != nil {
+		return "", 0, err
+	}
+
+	if resp == "" && opts.Default != "" {
+		resp = opts.Default
+	}
+
+	selectedIndex, err = strconv.Atoi(resp)
+	if err != nil {
+		return "", 0, err
+	}
+
+	// make sure its a valid option
+	if len(list) < selectedIndex {
+		return "", 0, errors.New("invalid option provided")
+	}
+
+	selectedText = list[selectedIndex]
+
+	return selectedText, selectedIndex, nil
+}
+
+func (p *Prompt) read(text string, format string) (string, error) {
 	fmt.Fprintf(p.Writer, format, text)
 
 	rdr := bufio.NewReader(p.Reader)
 
 	resp, err := rdr.ReadString('\n')
-	if err != nil {
-		return "", 0, err
+
+	return strings.TrimSpace(resp), err
+}
+
+func (p *Prompt) format(opts *InputOptions) string {
+	format := "%s"
+	if p.Options != nil && p.AppendQuestionMarksOnAsk == true {
+		format = format + "?"
+	}
+	if p.Options != nil && p.ShowDefaultInPrompt && opts.Default != "" {
+		format = format + " [" + opts.Default + "]"
+	}
+	if p.Options != nil && p.AppendSpace == true {
+		format = format + " "
 	}
 
-	// TODO check if the list has that index item
-
-	input := strings.TrimSpace(resp)
-
-	if input == "" && opts.Default != "" {
-		input = opts.Default
-	}
-
-	selectedIndex, err = strconv.Atoi(input)
-	selectedText = list[selectedIndex]
-
-	return selectedText, selectedIndex, nil
+	return format
 }
 
 // NewPrompt is used to quickly create a new prompt

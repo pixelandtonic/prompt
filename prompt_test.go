@@ -287,3 +287,139 @@ func TestPrompt_Confirm1(t *testing.T) {
 		})
 	}
 }
+
+func TestPrompt_format(t *testing.T) {
+	type fields struct {
+		Reader  io.Reader
+		Writer  io.Writer
+		Options *Options
+	}
+	type args struct {
+		opts *InputOptions
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   string
+	}{
+		{
+			name: "all options return the correct format",
+			fields: fields{
+				Reader: bytes.NewBuffer([]byte("\n")),
+				Writer: ioutil.Discard,
+				Options: &Options{
+					AppendQuestionMarksOnAsk: true,
+					AppendSpace:              true,
+					ShowDefaultInPrompt:      true,
+				},
+			},
+			args: args{opts: &InputOptions{
+				Default:   "this is my default",
+				Validator: nil,
+			}},
+			want: "%s? [this is my default] ",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &Prompt{
+				Reader:  tt.fields.Reader,
+				Writer:  tt.fields.Writer,
+				Options: tt.fields.Options,
+			}
+			if got := p.format(tt.args.opts); got != tt.want {
+				t.Errorf("format() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPrompt_Select(t *testing.T) {
+	type fields struct {
+		Reader  io.Reader
+		Writer  io.Writer
+		Options *Options
+	}
+	type args struct {
+		text string
+		list []string
+		opts *InputOptions
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    string
+		want1   int
+		wantErr bool
+	}{
+		{
+			name: "returns a default when no options are provided",
+			fields: fields{
+				Reader: bytes.NewBuffer([]byte("\n")),
+				Writer: ioutil.Discard,
+				Options: &Options{
+					AppendQuestionMarksOnAsk: true,
+					AppendSpace:              true,
+					ShowDefaultInPrompt:      true,
+				},
+			},
+			args: args{
+				opts: &InputOptions{
+					Default: "1",
+				},
+				list: []string{"testing", "select"},
+			},
+			want:    "select",
+			want1:   1,
+			wantErr: false,
+		},
+		{
+			name: "out of bound options returns an error",
+			fields: fields{
+				Reader:  bytes.NewBuffer([]byte("4\n")),
+				Writer:  ioutil.Discard,
+				Options: nil,
+			},
+			args: args{
+				opts: &InputOptions{
+					Default: "1",
+				},
+				list: []string{"testing", "select"},
+			},
+			want:    "",
+			want1:   0,
+			wantErr: true,
+		},
+		{
+			name: "empty lists returns an error",
+			args: args{
+				text: "some text",
+				list: nil,
+				opts: nil,
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &Prompt{
+				Reader:  tt.fields.Reader,
+				Writer:  tt.fields.Writer,
+				Options: tt.fields.Options,
+			}
+			got, got1, err := p.Select(tt.args.text, tt.args.list, tt.args.opts)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Select() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Select() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Select() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
