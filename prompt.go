@@ -22,13 +22,13 @@ type Prompt struct {
 // by default, it will add a ? to the provided question.
 func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 	format := "%s"
-	if p.AppendQuestionMarksOnAsk == true {
+	if p.Options != nil && p.AppendQuestionMarksOnAsk == true {
 		format = format + "?"
 	}
-	if p.ShowDefaultInPrompt && opts.Default != "" {
+	if p.Options != nil && p.ShowDefaultInPrompt && opts.Default != "" {
 		format = format + " [" + opts.Default + "]"
 	}
-	if p.AppendSpace == true {
+	if p.Options != nil && p.AppendSpace == true {
 		format = format + " "
 	}
 
@@ -42,7 +42,7 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 
 	input := strings.TrimSpace(resp)
 
-	if input == "" && opts.Default == "" {
+	if input == "" && opts == nil {
 		return "", errors.New("no input provided")
 	}
 
@@ -50,13 +50,13 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 		return opts.Default, nil
 	}
 
-	if opts.Validator != nil {
+	if opts != nil && opts.Validator != nil {
 		if err := opts.Validator(input); err != nil {
 			return "", err
 		}
 	}
 
-	return resp, nil
+	return input, nil
 }
 
 func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
@@ -102,6 +102,9 @@ func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
 	return false, nil
 }
 
+// Select will return a prompt with a list of options for a user to select. It will return the
+// selected string, the index (as it appears in 0-based index - not the displayed output),
+// and an error if something goes wrong.
 func (p *Prompt) Select(text string, list []string, opts *InputOptions) (string, int, error) {
 	if len(list) == 0 {
 		return "", 0, errors.New("list must be greater than 0")
