@@ -250,44 +250,6 @@ func TestNewPromptWithOptions(t *testing.T) {
 	}
 }
 
-func TestPrompt_Confirm1(t *testing.T) {
-	type fields struct {
-		Reader  io.Reader
-		Writer  io.Writer
-		Options *Options
-	}
-	type args struct {
-		text string
-		opts *InputOptions
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    bool
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := &Prompt{
-				Reader:  tt.fields.Reader,
-				Writer:  tt.fields.Writer,
-				Options: tt.fields.Options,
-			}
-			got, err := p.Confirm(tt.args.text, tt.args.opts)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Confirm() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("Confirm() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestPrompt_format(t *testing.T) {
 	type fields struct {
 		Reader  io.Reader
@@ -304,7 +266,7 @@ func TestPrompt_format(t *testing.T) {
 		want   string
 	}{
 		{
-			name: "all options return the correct format",
+			name: "all options return the correct fmtInputOptions",
 			fields: fields{
 				Reader: bytes.NewBuffer([]byte("\n")),
 				Writer: ioutil.Discard,
@@ -328,8 +290,8 @@ func TestPrompt_format(t *testing.T) {
 				Writer:  tt.fields.Writer,
 				Options: tt.fields.Options,
 			}
-			if got := p.format(tt.args.opts); got != tt.want {
-				t.Errorf("format() = %v, want %v", got, tt.want)
+			if got := p.fmtInputOptions(tt.args.opts); got != tt.want {
+				t.Errorf("fmtInputOptions() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -344,7 +306,7 @@ func TestPrompt_Select(t *testing.T) {
 	type args struct {
 		text string
 		list []string
-		opts *InputOptions
+		opts *SelectOptions
 	}
 	tests := []struct {
 		name    string
@@ -354,6 +316,27 @@ func TestPrompt_Select(t *testing.T) {
 		want1   int
 		wantErr bool
 	}{
+		{
+			name: "when providing an option the provided value accounts for zero indexing",
+			fields: fields{
+				Reader: bytes.NewBuffer([]byte("2\n")),
+				Writer: ioutil.Discard,
+				Options: &Options{
+					AppendQuestionMarksOnAsk: true,
+					AppendSpace:              true,
+					ShowDefaultInPrompt:      true,
+				},
+			},
+			args: args{
+				opts: &SelectOptions{
+					Default: 1,
+				},
+				list: []string{"testing", "select"},
+			},
+			want:    "select",
+			want1:   1,
+			wantErr: false,
+		},
 		{
 			name: "returns a default when no options are provided",
 			fields: fields{
@@ -366,13 +349,13 @@ func TestPrompt_Select(t *testing.T) {
 				},
 			},
 			args: args{
-				opts: &InputOptions{
-					Default: "1",
+				opts: &SelectOptions{
+					Default: 1,
 				},
 				list: []string{"testing", "select"},
 			},
-			want:    "select",
-			want1:   1,
+			want:    "testing",
+			want1:   0,
 			wantErr: false,
 		},
 		{
@@ -383,8 +366,8 @@ func TestPrompt_Select(t *testing.T) {
 				Options: nil,
 			},
 			args: args{
-				opts: &InputOptions{
-					Default: "1",
+				opts: &SelectOptions{
+					Default: 1,
 				},
 				list: []string{"testing", "select"},
 			},

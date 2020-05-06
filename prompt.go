@@ -21,7 +21,7 @@ type Prompt struct {
 // Ask is used to gather input from a user in the form of a question.
 // by default, it will add a ? to the provided question.
 func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
-	format := p.format(opts)
+	format := p.fmtInputOptions(opts)
 
 	resp, err := p.read(text, format)
 	if err != nil {
@@ -48,7 +48,7 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 }
 
 func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
-	format := p.format(opts)
+	format := p.fmtInputOptions(opts)
 
 	resp, err := p.read(text, format)
 	if err != nil {
@@ -79,12 +79,12 @@ func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
 // Select will return a prompt with a list of options for a user to select. It will return the
 // selected string, the index (as it appears in 0-based index - not the displayed output),
 // and an error if something goes wrong.
-func (p *Prompt) Select(text string, list []string, opts *InputOptions) (string, int, error) {
+func (p *Prompt) Select(text string, list []string, opts *SelectOptions) (string, int, error) {
 	if len(list) == 0 {
 		return "", 0, errors.New("list must be greater than 0")
 	}
 
-	format := p.format(opts)
+	format := p.fmtSelectOptions(opts)
 
 	var selectedIndex int
 	var selectedText string
@@ -108,8 +108,17 @@ func (p *Prompt) Select(text string, list []string, opts *InputOptions) (string,
 		return "", 0, err
 	}
 
-	if resp == "" && opts.Default != "" {
-		resp = opts.Default
+	if resp == "" && opts.Default != 0 {
+		// minus 1 to account for zero index
+		resp = strconv.Itoa(opts.Default - 1)
+	} else {
+		// convert resp to string
+		e, err := strconv.Atoi(resp)
+		if err != nil {
+			return "", 0, err
+		}
+		// minus one
+		resp = strconv.Itoa(e - 1)
 	}
 
 	selectedIndex, err = strconv.Atoi(resp)
@@ -137,13 +146,28 @@ func (p *Prompt) read(text string, format string) (string, error) {
 	return strings.TrimSpace(resp), err
 }
 
-func (p *Prompt) format(opts *InputOptions) string {
+func (p *Prompt) fmtInputOptions(opts *InputOptions) string {
 	format := "%s"
 	if p.Options != nil && p.AppendQuestionMarksOnAsk == true {
 		format = format + "?"
 	}
 	if p.Options != nil && p.ShowDefaultInPrompt && opts.Default != "" {
 		format = format + " [" + opts.Default + "]"
+	}
+	if p.Options != nil && p.AppendSpace == true {
+		format = format + " "
+	}
+
+	return format
+}
+
+func (p *Prompt) fmtSelectOptions(opts *SelectOptions) string {
+	format := "%s"
+	if p.Options != nil && p.AppendQuestionMarksOnAsk == true {
+		format = format + "?"
+	}
+	if p.Options != nil && p.ShowDefaultInPrompt && opts.Default != 0 {
+		format = format + " [" + strconv.Itoa(opts.Default) + "]"
 	}
 	if p.Options != nil && p.AppendSpace == true {
 		format = format + " "

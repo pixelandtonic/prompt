@@ -82,7 +82,7 @@ You can also pass a validator to confirm, but this will default to checking if t
 You can also create a selection of items to choose from:
 
 ```go
-opts := &prompt.InputOptions{Default: "1"}
+opts := &prompt.SelectOptions{Default: 1}
 selected, index, err := p.Select("Select an speed", []string{"Ludicrous mode", "Normal mode"}, opts)
 if err != nil {
 	log.Println(err)

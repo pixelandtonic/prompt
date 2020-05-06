@@ -35,7 +35,7 @@ func main() {
 	fmt.Println("confirmed:", confirm)
 
 	// provide a select option
-	selected, index, err := p.Select("Select an option", []string{"Ludicrous mode", "Normal mode"}, &prompt.InputOptions{Default: "1"})
+	selected, index, err := p.Select("Select an option", []string{"Ludicrous mode", "Normal mode"}, &prompt.SelectOptions{Default: 1})
 	if err != nil {
 		log.Println(err)
 	}
