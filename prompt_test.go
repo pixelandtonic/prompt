@@ -79,6 +79,28 @@ func TestPrompt_Ask(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name: "validator is run when a default is provided",
+			fields: fields{
+				Reader:  bytes.NewBuffer([]byte("\n")),
+				Writer:  ioutil.Discard,
+				Options: nil,
+			},
+			args: args{
+				text: "What is the meaning of life?",
+				opts: &InputOptions{
+					Default: "42",
+					Validator: func(s string) error {
+						if s != "34" {
+							return errors.New("wrong answer")
+						}
+						return nil
+					},
+				},
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
 			name: "no input and no default returns an error",
 			fields: fields{
 				Reader:  bytes.NewBuffer([]byte("\n")),
