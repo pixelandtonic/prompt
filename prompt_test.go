@@ -98,6 +98,27 @@ func TestPrompt_Ask(t *testing.T) {
 				},
 			},
 			want:    "42",
+			wantErr: false,
+		},
+		{
+			name: "error is returned validator when a default is not provided",
+			fields: fields{
+				Reader:  bytes.NewBuffer([]byte("\n")),
+				Writer:  ioutil.Discard,
+				Options: nil,
+			},
+			args: args{
+				text: "What is the meaning of life?",
+				opts: &InputOptions{
+					Validator: func(s string) error {
+						if s != "34" {
+							return errors.New("wrong answer")
+						}
+						return nil
+					},
+				},
+			},
+			want:    "",
 			wantErr: true,
 		},
 		{

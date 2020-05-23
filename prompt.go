@@ -40,7 +40,7 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 		if err := opts.Validator(input); err != nil {
 			// if there is a default, return it
 			if opts.Default != "" {
-				return opts.Default, err
+				return opts.Default, nil
 			}
 
 			return "", err
