@@ -1,6 +1,10 @@
 # Release Notes for Prompt
 
-### Unreleased
+### 1.1.1 - 2020-05-23
+
+## Fixed
+- Fixed an issue when validators were not running.
+- Fixed an issue when selecting an option that was greater than the list. ([#3](https://github.com/pixelandtonic/prompt/issues/3))
 
 ### 1.1.0 - 2020-05-06
 

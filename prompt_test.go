@@ -79,6 +79,49 @@ func TestPrompt_Ask(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name: "validator is run when a default is provided",
+			fields: fields{
+				Reader:  bytes.NewBuffer([]byte("\n")),
+				Writer:  ioutil.Discard,
+				Options: nil,
+			},
+			args: args{
+				text: "What is the meaning of life?",
+				opts: &InputOptions{
+					Default: "42",
+					Validator: func(s string) error {
+						if s != "34" {
+							return errors.New("wrong answer")
+						}
+						return nil
+					},
+				},
+			},
+			want:    "42",
+			wantErr: false,
+		},
+		{
+			name: "error is returned validator when a default is not provided",
+			fields: fields{
+				Reader:  bytes.NewBuffer([]byte("\n")),
+				Writer:  ioutil.Discard,
+				Options: nil,
+			},
+			args: args{
+				text: "What is the meaning of life?",
+				opts: &InputOptions{
+					Validator: func(s string) error {
+						if s != "34" {
+							return errors.New("wrong answer")
+						}
+						return nil
+					},
+				},
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
 			name: "no input and no default returns an error",
 			fields: fields{
 				Reader:  bytes.NewBuffer([]byte("\n")),
@@ -316,6 +359,27 @@ func TestPrompt_Select(t *testing.T) {
 		want1   int
 		wantErr bool
 	}{
+		{
+			name: "out of range selections return an error",
+			fields: fields{
+				Reader: bytes.NewBuffer([]byte("3\n")),
+				Writer: ioutil.Discard,
+				Options: &Options{
+					AppendQuestionMarksOnAsk: true,
+					AppendSpace:              true,
+					ShowDefaultInPrompt:      true,
+				},
+			},
+			args: args{
+				opts: &SelectOptions{
+					Default: 1,
+				},
+				list: []string{"testing", "select"},
+			},
+			want:    "",
+			want1:   0,
+			wantErr: true,
+		},
 		{
 			name: "when providing an option the provided value accounts for zero indexing",
 			fields: fields{

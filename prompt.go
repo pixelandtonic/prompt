@@ -30,18 +30,26 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 
 	input := strings.TrimSpace(resp)
 
+	// no input and no opts
 	if input == "" && opts == nil {
 		return "", errors.New("no input provided")
 	}
 
-	if input == "" && opts.Default != "" {
-		return opts.Default, nil
-	}
-
+	// if opts is not nil and there is a validator
 	if opts != nil && opts.Validator != nil {
 		if err := opts.Validator(input); err != nil {
+			// if there is a default, return it
+			if opts.Default != "" {
+				return opts.Default, nil
+			}
+
 			return "", err
 		}
+	}
+
+	// no input, no opts, and a default is set
+	if opts != nil && opts.Default != "" {
+		return opts.Default, nil
 	}
 
 	return input, nil
@@ -59,14 +67,14 @@ func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
 		return false, errors.New("no value provided")
 	}
 
-	if resp == "" && opts.Default != "" {
-		resp = opts.Default
-	}
-
 	if opts != nil && opts.Validator != nil {
 		if err := opts.Validator(resp); err != nil {
 			return false, err
 		}
+	}
+
+	if resp == "" && opts != nil && opts.Default != "" {
+		resp = opts.Default
 	}
 
 	if strings.ContainsAny(resp, "yes") {
@@ -117,6 +125,12 @@ func (p *Prompt) Select(text string, list []string, opts *SelectOptions) (string
 		if err != nil {
 			return "", 0, err
 		}
+
+		// make sure its a valid option before we minus one
+		if len(list) < e {
+			return "", 0, errors.New("invalid option provided")
+		}
+
 		// minus one
 		resp = strconv.Itoa(e - 1)
 	}
@@ -124,11 +138,6 @@ func (p *Prompt) Select(text string, list []string, opts *SelectOptions) (string
 	selectedIndex, err = strconv.Atoi(resp)
 	if err != nil {
 		return "", 0, err
-	}
-
-	// make sure its a valid option
-	if len(list) < selectedIndex {
-		return "", 0, errors.New("invalid option provided")
 	}
 
 	selectedText = list[selectedIndex]
