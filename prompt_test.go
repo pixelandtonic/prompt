@@ -97,7 +97,7 @@ func TestPrompt_Ask(t *testing.T) {
 					},
 				},
 			},
-			want:    "",
+			want:    "42",
 			wantErr: true,
 		},
 		{

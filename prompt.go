@@ -38,12 +38,17 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 	// if opts is not nil and there is a validator
 	if opts != nil && opts.Validator != nil {
 		if err := opts.Validator(input); err != nil {
+			// if there is a default, return it
+			if opts.Default != "" {
+				return opts.Default, err
+			}
+
 			return "", err
 		}
 	}
 
 	// no input, no opts, and a default is set
-	if input == "" && opts != nil && opts.Default != "" {
+	if opts != nil && opts.Default != "" {
 		return opts.Default, nil
 	}
 
