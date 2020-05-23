@@ -120,6 +120,12 @@ func (p *Prompt) Select(text string, list []string, opts *SelectOptions) (string
 		if err != nil {
 			return "", 0, err
 		}
+
+		// make sure its a valid option before we minus one
+		if len(list) < e {
+			return "", 0, errors.New("invalid option provided")
+		}
+
 		// minus one
 		resp = strconv.Itoa(e - 1)
 	}
@@ -127,11 +133,6 @@ func (p *Prompt) Select(text string, list []string, opts *SelectOptions) (string
 	selectedIndex, err = strconv.Atoi(resp)
 	if err != nil {
 		return "", 0, err
-	}
-
-	// make sure its a valid option
-	if len(list) < selectedIndex {
-		return "", 0, errors.New("invalid option provided")
 	}
 
 	selectedText = list[selectedIndex]

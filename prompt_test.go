@@ -339,6 +339,27 @@ func TestPrompt_Select(t *testing.T) {
 		wantErr bool
 	}{
 		{
+			name: "out of range selections return an error",
+			fields: fields{
+				Reader: bytes.NewBuffer([]byte("3\n")),
+				Writer: ioutil.Discard,
+				Options: &Options{
+					AppendQuestionMarksOnAsk: true,
+					AppendSpace:              true,
+					ShowDefaultInPrompt:      true,
+				},
+			},
+			args: args{
+				opts: &SelectOptions{
+					Default: 1,
+				},
+				list: []string{"testing", "select"},
+			},
+			want:    "",
+			want1:   0,
+			wantErr: true,
+		},
+		{
 			name: "when providing an option the provided value accounts for zero indexing",
 			fields: fields{
 				Reader: bytes.NewBuffer([]byte("2\n")),
