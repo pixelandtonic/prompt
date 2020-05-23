@@ -1,5 +1,10 @@
 # Release Notes for Prompt
 
+### 1.1.2 - 2020-05-23
+
+## Changed
+- Provide output that we are using the default when provided information is not valid.
+
 ### 1.1.1 - 2020-05-23
 
 ## Fixed
