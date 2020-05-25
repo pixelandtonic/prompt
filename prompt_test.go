@@ -88,6 +88,20 @@ func TestPrompt_Ask(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "provided input will return when no options are present",
+			fields: fields{
+				Reader:  bytes.NewReader([]byte("some input\n")),
+				Writer:  ioutil.Discard,
+				Options: DefaultOptions,
+			},
+			args: args{
+				text: "some input will be returned",
+				opts: nil,
+			},
+			want:    "some input",
+			wantErr: false,
+		},
+		{
 			name: "empty input will return an error when no options are present",
 			fields: fields{
 				Reader:  bytes.NewReader([]byte("\n")),
