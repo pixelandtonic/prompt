@@ -38,11 +38,13 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 
 	input := strings.TrimSpace(resp)
 
+	// show me what you're working with
 	switch input {
 	case "":
 		// check the opts
 		switch opts {
 		case nil:
+			// no options and no input means we return an error
 			return "", errors.New("no input or default value provided")
 		default:
 			// check if there is a default to return
@@ -53,6 +55,7 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 	default:
 		switch opts {
 		case nil:
+			// there are no options, so just return the input
 			return input, nil
 		default:
 			// validate in provided input
