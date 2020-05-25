@@ -1,5 +1,10 @@
 # Release Notes for Prompt
 
+### Unreleased
+
+## Fixed
+- Corrected some behavior that would return default values when input was provided.
+
 ### 1.1.2 - 2020-05-23
 
 ## Changed

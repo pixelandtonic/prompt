@@ -68,6 +68,10 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 	return input, nil
 }
 
+// Confirm is used to prompt a user for a yes/no question. It will always
+// return an bool or error if something goes horribly wrong. Like the
+// other prompts, it also takes options to provide a default value
+// as well as an optional validator to verify input entered.
 func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
 	format := p.fmtInputOptions(opts)
 
