@@ -28,48 +28,19 @@ func TestPrompt_Ask(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "provided input is returned",
+			name: "complete example will return validator error when input is invalid when provided",
 			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("output\n")),
+				Reader:  bytes.NewReader([]byte("this is wrong\n")),
 				Writer:  ioutil.Discard,
-				Options: nil,
+				Options: DefaultOptions,
 			},
 			args: args{
-				text: "What do you want to see?",
-				opts: nil,
-			},
-			want:    "output",
-			wantErr: false,
-		},
-		{
-			name: "defaults are returned when no data is provided",
-			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("\n")),
-				Writer:  ioutil.Discard,
-				Options: nil,
-			},
-			args: args{
-				text: "What do you want to see?",
+				text: "input will be returned",
 				opts: &InputOptions{
-					Default: "my default",
-				},
-			},
-			want:    "my default",
-			wantErr: false,
-		},
-		{
-			name: "validator is run when provided",
-			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("not42\n")),
-				Writer:  ioutil.Discard,
-				Options: nil,
-			},
-			args: args{
-				text: "What is the meaning of life?",
-				opts: &InputOptions{
+					Default: "the-default",
 					Validator: func(s string) error {
-						if s != "42" {
-							return errors.New("wrong answer")
+						if s == "this is wrong" {
+							return errors.New("wrong input")
 						}
 						return nil
 					},
@@ -79,57 +50,52 @@ func TestPrompt_Ask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "validator is run when a default is provided",
+			name: "complete example will return provided input when provided",
 			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("\n")),
+				Reader:  bytes.NewReader([]byte("not-the-default\n")),
 				Writer:  ioutil.Discard,
-				Options: nil,
+				Options: DefaultOptions,
 			},
 			args: args{
-				text: "What is the meaning of life?",
+				text: "input will be returned",
 				opts: &InputOptions{
-					Default: "42",
+					Default: "the-default",
 					Validator: func(s string) error {
-						if s != "34" {
-							return errors.New("wrong answer")
-						}
 						return nil
 					},
 				},
 			},
-			want:    "42",
+			want:    "not-the-default",
 			wantErr: false,
 		},
 		{
-			name: "error is returned validator when a default is not provided",
+			name: "complete example will return default when nothing is provided",
 			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("\n")),
+				Reader:  bytes.NewReader([]byte("\n")),
 				Writer:  ioutil.Discard,
-				Options: nil,
+				Options: DefaultOptions,
 			},
 			args: args{
-				text: "What is the meaning of life?",
+				text: "default will be returned",
 				opts: &InputOptions{
+					Default: "the-default",
 					Validator: func(s string) error {
-						if s != "34" {
-							return errors.New("wrong answer")
-						}
 						return nil
 					},
 				},
 			},
-			want:    "",
-			wantErr: true,
+			want:    "the-default",
+			wantErr: false,
 		},
 		{
-			name: "no input and no default returns an error",
+			name: "empty input will return an error when no options are present",
 			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("\n")),
+				Reader:  bytes.NewReader([]byte("\n")),
 				Writer:  ioutil.Discard,
-				Options: nil,
+				Options: DefaultOptions,
 			},
 			args: args{
-				text: "This is going to fail",
+				text: "no input error will be returned",
 				opts: nil,
 			},
 			want:    "",
