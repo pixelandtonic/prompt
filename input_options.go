@@ -5,6 +5,7 @@ package prompt
 type InputOptions struct {
 	Default   string
 	Validator Validator
+	AppendQuestionMark bool
 }
 
 // SelectOptions are used on the select prompts and allow
@@ -13,4 +14,5 @@ type InputOptions struct {
 type SelectOptions struct {
 	Default   int
 	Validator Validator
+	AppendQuestionMark bool
 }
