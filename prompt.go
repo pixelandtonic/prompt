@@ -183,7 +183,7 @@ func (p *Prompt) read(text string, format string) (string, error) {
 
 func (p *Prompt) fmtInputOptions(opts *InputOptions) string {
 	format := "%s"
-	if p.Options != nil && p.AppendQuestionMarksOnAsk == true {
+	if (p.Options != nil && p.AppendQuestionMarksOnAsk == true) || (opts != nil && opts.AppendQuestionMark == true) {
 		format = format + "?"
 	}
 	if p.Options != nil && p.ShowDefaultInPrompt && opts != nil && opts.Default != "" {
@@ -198,7 +198,7 @@ func (p *Prompt) fmtInputOptions(opts *InputOptions) string {
 
 func (p *Prompt) fmtSelectOptions(opts *SelectOptions) string {
 	format := "%s"
-	if p.Options != nil && p.AppendQuestionMarksOnAsk == true {
+	if (p.Options != nil && p.AppendQuestionMarksOnAsk == true) || (opts != nil && opts.AppendQuestionMark == true) {
 		format = format + "?"
 	}
 	if p.Options != nil && p.ShowDefaultInPrompt && opts.Default != 0 {
