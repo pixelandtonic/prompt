@@ -1,5 +1,8 @@
 # Release Notes for Prompt
 
+### 1.1.4 - 2020-05-26
+- Fixed a nil pointer dereference 
+
 ### 1.1.3 - 2020-05-26
 
 ## Changed
