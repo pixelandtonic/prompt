@@ -225,7 +225,7 @@ func TestNewPrompt(t *testing.T) {
 				Reader: os.Stdin,
 				Writer: os.Stdout,
 				Options: &Options{
-					AppendQuestionMarksOnAsk: true,
+					AppendQuestionMarksOnAsk: false,
 					AppendSpace:              true,
 					ShowDefaultInPrompt:      true,
 				},
@@ -345,7 +345,7 @@ func TestPrompt_Select(t *testing.T) {
 				Reader: bytes.NewBuffer([]byte("3\n")),
 				Writer: ioutil.Discard,
 				Options: &Options{
-					AppendQuestionMarksOnAsk: true,
+					AppendQuestionMarksOnAsk: false,
 					AppendSpace:              true,
 					ShowDefaultInPrompt:      true,
 				},
@@ -366,7 +366,7 @@ func TestPrompt_Select(t *testing.T) {
 				Reader: bytes.NewBuffer([]byte("2\n")),
 				Writer: ioutil.Discard,
 				Options: &Options{
-					AppendQuestionMarksOnAsk: true,
+					AppendQuestionMarksOnAsk: false,
 					AppendSpace:              true,
 					ShowDefaultInPrompt:      true,
 				},
@@ -387,7 +387,7 @@ func TestPrompt_Select(t *testing.T) {
 				Reader: bytes.NewBuffer([]byte("\n")),
 				Writer: ioutil.Discard,
 				Options: &Options{
-					AppendQuestionMarksOnAsk: true,
+					AppendQuestionMarksOnAsk: false,
 					AppendSpace:              true,
 					ShowDefaultInPrompt:      true,
 				},

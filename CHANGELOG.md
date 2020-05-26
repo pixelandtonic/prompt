@@ -1,7 +1,16 @@
 # Release Notes for Prompt
 
+### Unreleased
+
+### 1.1.5 - 2020-05-26
+
+## Changed
+- The `AppendQuestionMarksOnAsk` global option now defaults to `false`.
+
 ### 1.1.4 - 2020-05-26
-- Fixed a nil pointer dereference 
+
+## Fixed
+- Fixed a nil pointer dereference.
 
 ### 1.1.3 - 2020-05-26
 
