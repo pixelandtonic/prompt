@@ -48,8 +48,13 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 			return "", errors.New("no input or default value provided")
 		default:
 			// check if there is a default to return
-			if opts != nil && opts.Default != "" {
+			if opts.Default != "" {
 				return opts.Default, nil
+			}
+
+			// validate in provided input - even if empty
+			if err := opts.Validator(input); err != nil {
+				return "", err
 			}
 		}
 	default:
