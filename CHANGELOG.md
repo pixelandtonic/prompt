@@ -2,6 +2,11 @@
 
 ### Unreleased
 
+### 1.1.6 - 2020-05-26
+
+## Fixed
+- Fixed a bug where the library was referencing the incorrect Go version.
+
 ### 1.1.5 - 2020-05-26
 
 ## Changed
