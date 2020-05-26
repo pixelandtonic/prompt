@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 1.1.5 - 2020-05-26
+
 ## Changed
 - The `AppendQuestionMarksOnAsk` global option now defaults to `false`.
 
