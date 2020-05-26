@@ -1,6 +1,9 @@
 # Release Notes for Prompt
 
-### Unreleased
+### 1.1.3 - 2020-05-26
+
+## Changed
+- Validator is still ran even if input is empty.
 
 ## Fixed
 - Corrected some behavior that would return default values when input was provided.
