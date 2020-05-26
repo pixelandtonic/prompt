@@ -12,7 +12,7 @@ import (
 
 var (
 	DefaultOptions = &Options{
-		AppendQuestionMarksOnAsk: true,
+		AppendQuestionMarksOnAsk: false,
 		AppendSpace:              true,
 		ShowDefaultInPrompt:      true,
 	}
