@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+### 1.1.7 - 2020-05-26
+
 ## Changed
 - You can now override the global `AppendQuestionMarksOnAsk` setting and append a question mark on a per prompt basis using `AppendQuestionMark`.
 
