@@ -52,9 +52,11 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 				return opts.Default, nil
 			}
 
-			// validate in provided input - even if empty
-			if err := opts.Validator(input); err != nil {
-				return "", err
+			if opts.Validator != nil {
+				// validate in provided input - even if empty
+				if err := opts.Validator(input); err != nil {
+					return "", err
+				}
 			}
 		}
 	default:
@@ -63,9 +65,11 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 			// there are no options, so just return the input
 			return input, nil
 		default:
-			// validate in provided input
-			if err := opts.Validator(input); err != nil {
-				return "", err
+			if opts.Validator != nil {
+				// validate in provided input
+				if err := opts.Validator(input); err != nil {
+					return "", err
+				}
 			}
 		}
 	}
