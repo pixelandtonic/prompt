@@ -20,18 +20,33 @@ func main() {
 	p := prompt.NewPrompt()
 
 	// each prompt type allows for question specific overrides
-	answer, err := p.Ask("what is the meaning of life", &prompt.InputOptions{Default: "42", Validator: validateAsk})
+	withDefault, err := p.Ask("what is the meaning of life with a default", &prompt.InputOptions{
+		Default:   "24",
+		Validator: validateAsk,
+	})
 	if err != nil {
 		fmt.Println(err)
+	} else {
+		fmt.Println("answered:", withDefault)
 	}
-	fmt.Println("answered:", answer)
+
+	noDefault, err := p.Ask("what is the meaning of life without a default", &prompt.InputOptions{
+		Validator: validateAsk,
+	})
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("answered:", noDefault)
+	}
 
 	// you can also use Confirm to always return a boolean which defaults to false
 	confirm, err := p.Confirm("Do you confirm these changes", &prompt.InputOptions{Default: "yes"})
 	if err != nil {
 		fmt.Println(err)
+	} else {
+		fmt.Println("confirmed:", confirm)
 	}
-	fmt.Println("confirmed:", confirm)
+
 
 	// provide a select option
 	selected, index, err := p.Select("Select an option", []string{"Ludicrous mode", "Normal mode"}, &prompt.SelectOptions{Default: 1})

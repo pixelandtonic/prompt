@@ -28,108 +28,88 @@ func TestPrompt_Ask(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "provided input is returned",
+			name: "complete example will return validator error when input is invalid when provided",
 			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("output\n")),
+				Reader:  bytes.NewReader([]byte("this is wrong\n")),
 				Writer:  ioutil.Discard,
-				Options: nil,
+				Options: DefaultOptions,
 			},
 			args: args{
-				text: "What do you want to see?",
+				text: "input will be returned",
+				opts: &InputOptions{
+					Default: "the-default",
+					Validator: func(s string) error {
+						if s == "this is wrong" {
+							return errors.New("wrong input")
+						}
+						return nil
+					},
+				},
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name: "complete example will return provided input when provided",
+			fields: fields{
+				Reader:  bytes.NewReader([]byte("not-the-default\n")),
+				Writer:  ioutil.Discard,
+				Options: DefaultOptions,
+			},
+			args: args{
+				text: "input will be returned",
+				opts: &InputOptions{
+					Default: "the-default",
+					Validator: func(s string) error {
+						return nil
+					},
+				},
+			},
+			want:    "not-the-default",
+			wantErr: false,
+		},
+		{
+			name: "complete example will return default when nothing is provided",
+			fields: fields{
+				Reader:  bytes.NewReader([]byte("\n")),
+				Writer:  ioutil.Discard,
+				Options: DefaultOptions,
+			},
+			args: args{
+				text: "default will be returned",
+				opts: &InputOptions{
+					Default: "the-default",
+					Validator: func(s string) error {
+						return nil
+					},
+				},
+			},
+			want:    "the-default",
+			wantErr: false,
+		},
+		{
+			name: "provided input will return when no options are present",
+			fields: fields{
+				Reader:  bytes.NewReader([]byte("some input\n")),
+				Writer:  ioutil.Discard,
+				Options: DefaultOptions,
+			},
+			args: args{
+				text: "some input will be returned",
 				opts: nil,
 			},
-			want:    "output",
+			want:    "some input",
 			wantErr: false,
 		},
 		{
-			name: "defaults are returned when no data is provided",
+			name: "empty input will return an error when no options are present",
 			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("\n")),
+				Reader:  bytes.NewReader([]byte("\n")),
 				Writer:  ioutil.Discard,
-				Options: nil,
+				Options: DefaultOptions,
 			},
 			args: args{
-				text: "What do you want to see?",
-				opts: &InputOptions{
-					Default: "my default",
-				},
-			},
-			want:    "my default",
-			wantErr: false,
-		},
-		{
-			name: "validator is run when provided",
-			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("not42\n")),
-				Writer:  ioutil.Discard,
-				Options: nil,
-			},
-			args: args{
-				text: "What is the meaning of life?",
-				opts: &InputOptions{
-					Validator: func(s string) error {
-						if s != "42" {
-							return errors.New("wrong answer")
-						}
-						return nil
-					},
-				},
-			},
-			want:    "",
-			wantErr: true,
-		},
-		{
-			name: "validator is run when a default is provided",
-			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("\n")),
-				Writer:  ioutil.Discard,
-				Options: nil,
-			},
-			args: args{
-				text: "What is the meaning of life?",
-				opts: &InputOptions{
-					Default: "42",
-					Validator: func(s string) error {
-						if s != "34" {
-							return errors.New("wrong answer")
-						}
-						return nil
-					},
-				},
-			},
-			want:    "42",
-			wantErr: false,
-		},
-		{
-			name: "error is returned validator when a default is not provided",
-			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("\n")),
-				Writer:  ioutil.Discard,
-				Options: nil,
-			},
-			args: args{
-				text: "What is the meaning of life?",
-				opts: &InputOptions{
-					Validator: func(s string) error {
-						if s != "34" {
-							return errors.New("wrong answer")
-						}
-						return nil
-					},
-				},
-			},
-			want:    "",
-			wantErr: true,
-		},
-		{
-			name: "no input and no default returns an error",
-			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("\n")),
-				Writer:  ioutil.Discard,
-				Options: nil,
-			},
-			args: args{
-				text: "This is going to fail",
+				text: "no input error will be returned",
 				opts: nil,
 			},
 			want:    "",

@@ -10,6 +10,14 @@ import (
 	"strings"
 )
 
+var (
+	DefaultOptions = &Options{
+		AppendQuestionMarksOnAsk: true,
+		AppendSpace:              true,
+		ShowDefaultInPrompt:      true,
+	}
+)
+
 // Prompt is a struct that contains the reader, writer,
 // and options that are applied to all prompts.
 type Prompt struct {
@@ -30,32 +38,45 @@ func (p *Prompt) Ask(text string, opts *InputOptions) (string, error) {
 
 	input := strings.TrimSpace(resp)
 
-	// no input and no opts
-	if input == "" && opts == nil {
-		return "", errors.New("no input provided")
-	}
-
-	// if opts is not nil and there is a validator
-	if opts != nil && opts.Validator != nil {
-		if err := opts.Validator(input); err != nil {
-			// if there is a default, return it
+	// show me what you're working with
+	switch input {
+	case "":
+		// check the opts
+		switch opts {
+		case nil:
+			// no options and no input means we return an error
+			return "", errors.New("no input or default value provided")
+		default:
+			// check if there is a default to return
 			if opts.Default != "" {
-				fmt.Println("invalid input provided, using the default", opts.Default)
 				return opts.Default, nil
 			}
 
-			return "", err
+			// validate in provided input - even if empty
+			if err := opts.Validator(input); err != nil {
+				return "", err
+			}
 		}
-	}
-
-	// no input, no opts, and a default is set
-	if opts != nil && opts.Default != "" {
-		return opts.Default, nil
+	default:
+		switch opts {
+		case nil:
+			// there are no options, so just return the input
+			return input, nil
+		default:
+			// validate in provided input
+			if err := opts.Validator(input); err != nil {
+				return "", err
+			}
+		}
 	}
 
 	return input, nil
 }
 
+// Confirm is used to prompt a user for a yes/no question. It will always
+// return an bool or error if something goes horribly wrong. Like the
+// other prompts, it also takes options to provide a default value
+// as well as an optional validator to verify input entered.
 func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
 	format := p.fmtInputOptions(opts)
 
@@ -161,7 +182,7 @@ func (p *Prompt) fmtInputOptions(opts *InputOptions) string {
 	if p.Options != nil && p.AppendQuestionMarksOnAsk == true {
 		format = format + "?"
 	}
-	if p.Options != nil && p.ShowDefaultInPrompt && opts.Default != "" {
+	if p.Options != nil && p.ShowDefaultInPrompt && opts != nil && opts.Default != "" {
 		format = format + " [" + opts.Default + "]"
 	}
 	if p.Options != nil && p.AppendSpace == true {
@@ -190,13 +211,9 @@ func (p *Prompt) fmtSelectOptions(opts *SelectOptions) string {
 // with the default options used on projects.
 func NewPrompt() *Prompt {
 	return &Prompt{
-		Reader: os.Stdin,
-		Writer: os.Stdout,
-		Options: &Options{
-			AppendQuestionMarksOnAsk: true,
-			AppendSpace:              true,
-			ShowDefaultInPrompt:      true,
-		},
+		Reader:  os.Stdin,
+		Writer:  os.Stdout,
+		Options: DefaultOptions,
 	}
 }
 
