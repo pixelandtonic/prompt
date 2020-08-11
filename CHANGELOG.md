@@ -2,6 +2,11 @@
 
 ### Unreleased
 
+### 1.1.8 - 2020-08-10
+
+## Fixed
+- Fixed an issue when using the confirm prompt.
+
 ### 1.1.7 - 2020-05-26
 
 ## Changed
