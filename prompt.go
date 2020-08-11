@@ -103,7 +103,10 @@ func (p *Prompt) Confirm(text string, opts *InputOptions) (bool, error) {
 		resp = opts.Default
 	}
 
-	if strings.ContainsAny(resp, "yes") {
+	switch resp {
+	case "y":
+		return true, nil
+	case "yes":
 		return true, nil
 	}
 
