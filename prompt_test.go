@@ -167,9 +167,9 @@ func TestPrompt_Confirm(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "catches any part of the word yes as true",
+			name: "catches y as true",
 			fields: fields{
-				Reader:  bytes.NewBuffer([]byte("es\n")),
+				Reader:  bytes.NewBuffer([]byte("y\n")),
 				Writer:  ioutil.Discard,
 				Options: nil,
 			},
